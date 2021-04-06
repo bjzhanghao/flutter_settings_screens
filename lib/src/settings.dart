@@ -8,8 +8,7 @@ import 'cache/cache.dart';
 ///
 /// When the value associated with a settings key changes, [ValueChangeObserver]
 /// triggers a [InternalWidgetBuilder] function call.
-typedef InternalWidgetBuilder<T> = Widget Function(
-    BuildContext, T, ValueChanged<T>);
+typedef InternalWidgetBuilder<T> = Widget Function(BuildContext, T, ValueChanged<T>);
 
 /// This function type is used for building a widget based on the value given to it.
 /// It is an alternate version of [WidgetBuilder].
@@ -54,7 +53,7 @@ class Settings {
   /// Private instance of [CacheProvider] which will allow access to the
   /// underlying cache mechanism, which can be any of [SharedPreference],[Hive]
   /// or any other cache provider of choice
-  static CacheProvider _cacheProvider;
+  static CacheProvider? _cacheProvider;
 
   /// This method will check and ensure that [_cacheProvider]
   /// value is set properly.
@@ -75,18 +74,18 @@ class Settings {
   ///
   /// Cache provider is optional, default cache provider uses the
   /// shared preferences based cache provider implementation.
-  static Future<void> init({CacheProvider cacheProvider}) async {
+  static Future<void> init({required CacheProvider cacheProvider}) async {
     cacheProvider ??= SharePreferenceCache();
 
     _cacheProvider = cacheProvider;
-    await _cacheProvider.init();
+    await _cacheProvider!.init();
   }
 
   /// method to check if the cache provider contains given [key] or not.
   static bool containsKey(String key) {
     ensureCacheProvider();
     assert(key != null);
-    return _cacheProvider.containsKey(key);
+    return _cacheProvider!.containsKey(key);
   }
 
   /// method to get a value using the [cacheProvider] for given [key]
@@ -96,8 +95,8 @@ class Settings {
   static T getValue<T>(String key, T defaultValue) {
     ensureCacheProvider();
     assert(key != null);
-    if (_cacheProvider.containsKey(key)) {
-      return _cacheProvider.getValue<T>(key, defaultValue);
+    if (_cacheProvider!.containsKey(key)) {
+      return _cacheProvider!.getValue<T>(key, defaultValue);
     }
     return defaultValue;
   }
@@ -106,15 +105,15 @@ class Settings {
   static Future<void> setValue<T>(String key, T value) async {
     ensureCacheProvider();
     if (value == null) {
-      return _cacheProvider.remove(key);
+      return _cacheProvider!.remove(key);
     }
-    await _cacheProvider.setObject<T>(key, value);
+    await _cacheProvider!.setObject<T>(key, value);
   }
 
   /// method to clear all the cached data using the [cacheProvider]
   static void clearCache() {
     ensureCacheProvider();
-    _cacheProvider.removeAll();
+    _cacheProvider!.removeAll();
   }
 }
 
@@ -150,8 +149,7 @@ class ValueChangeNotifier<T> extends ValueNotifier<T> {
 ///
 /// If a settings key is already added in the map, the new notifier
 /// is added to the list of notifiers
-Map<String, List<ValueChangeNotifier>> _notifiers =
-    <String, List<ValueChangeNotifier>>{};
+Map<String, List<ValueChangeNotifier>> _notifiers = <String, List<ValueChangeNotifier>>{};
 
 /// A Stateful widget which Takes in a [cacheKey], a [defaultValue]
 /// and a [builder]
@@ -164,9 +162,9 @@ class ValueChangeObserver<T> extends StatefulWidget {
   final InternalWidgetBuilder<T> builder;
 
   const ValueChangeObserver({
-    @required this.cacheKey,
-    @required this.defaultValue,
-    @required this.builder,
+    required this.cacheKey,
+    required this.defaultValue,
+    required this.builder,
   });
 
   @override
@@ -174,13 +172,13 @@ class ValueChangeObserver<T> extends StatefulWidget {
 }
 
 class _ValueChangeObserverState<T> extends State<ValueChangeObserver<T>> {
-  T value;
+  T? value;
 
   String get cacheKey => widget.cacheKey;
 
   T get defaultValue => widget.defaultValue;
 
-  ValueChangeNotifier<T> notifier;
+  ValueChangeNotifier<T>? notifier;
 
   @override
   void initState() {
@@ -199,15 +197,15 @@ class _ValueChangeObserverState<T> extends State<ValueChangeObserver<T>> {
     if (!_notifiers.containsKey(cacheKey)) {
       _notifiers[cacheKey] = List<ValueChangeNotifier<T>>.empty(growable: true);
     }
-    _notifiers[cacheKey].add(notifier);
+    _notifiers[cacheKey]!.add(notifier!);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<T>(
-      valueListenable: notifier,
-      builder: (BuildContext context, T value, Widget child) {
+      valueListenable: notifier!,
+      builder: (BuildContext context, T value, Widget? child) {
         return widget.builder(context, value, onChange);
       },
     );
@@ -216,7 +214,7 @@ class _ValueChangeObserverState<T> extends State<ValueChangeObserver<T>> {
   /// This method is used to trigger all the associated notifiers
   /// when associated value is changed in cache
   void onChange(T newValue) {
-    _notifiers[cacheKey].forEach((notifier) {
+    _notifiers[cacheKey]!.forEach((notifier) {
       notifier.value = newValue;
     });
   }

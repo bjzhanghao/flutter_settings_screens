@@ -76,7 +76,7 @@ class SettingsScreen extends StatelessWidget {
 
   SettingsScreen({
     this.title = 'Settings',
-    @required this.children,
+    required this.children,
   });
 
   @override
@@ -104,7 +104,7 @@ class _SettingsTile extends StatefulWidget {
   final String title;
 
   /// widget to be placed at first in the tile
-  final Widget leading;
+  final Widget? leading;
 
   /// subtitle string for the tile
   final String subtitle;
@@ -116,14 +116,14 @@ class _SettingsTile extends StatefulWidget {
   final Widget child;
 
   /// call back for handling the tap event on tile
-  final GestureTapCallback onTap;
+  final GestureTapCallback? onTap;
 
   /// flag to show the child below the main tile elements
   final bool showChildBelow;
 
   _SettingsTile({
-    @required this.title,
-    @required this.child,
+    required this.title,
+    required this.child,
     this.subtitle = '',
     this.onTap,
     this.enabled = true,
@@ -167,8 +167,7 @@ class __SettingsTileState extends State<_SettingsTile> {
             ),
             dense: true,
             // wrap only if the subtitle is longer than 70 characters
-            isThreeLine: (widget.subtitle?.isNotEmpty ?? false) &&
-                widget.subtitle.length > 70,
+            isThreeLine: (widget.subtitle?.isNotEmpty ?? false) && widget.subtitle.length > 70,
           ),
           Visibility(
             visible: widget.showChildBelow,
@@ -191,11 +190,11 @@ class _SimpleHeaderTile extends StatefulWidget {
   final String subtitle;
 
   /// widget to be placed at first in the tile
-  final Widget leading;
+  final Widget? leading;
 
   const _SimpleHeaderTile({
-    Key key,
-    this.title,
+    Key? key,
+    required this.title,
     this.subtitle = '',
     this.leading,
   }) : super(key: key);
@@ -254,12 +253,12 @@ class _ExpansionSettingsTile extends StatefulWidget {
   final Widget child;
 
   /// The widget shown in front of the title
-  final Widget leading;
+  final Widget? leading;
 
   _ExpansionSettingsTile({
-    @required this.title,
+    required this.title,
     this.subtitle = '',
-    this.child,
+    required this.child,
     this.enabled = true,
     this.expanded = false,
     this.leading,
@@ -304,7 +303,7 @@ class _ExpansionSettingsTileState extends State<_ExpansionSettingsTile> {
         ),
         initiallyExpanded: widget.expanded,
         childrenPadding: EdgeInsets.only(left: 8.0),
-        children: <Widget>[widget.child],
+        children: <Widget>[widget.child!],
       ),
     );
   }
@@ -327,11 +326,11 @@ class _ModalSettingsTile<T> extends StatefulWidget {
   final bool enabled;
 
   /// The widget shown in front of the title
-  final Widget leading;
+  final Widget? leading;
 
   /// The list widgets which will be displayed in a vertical list manner
   /// when the dialog is displayed
-  final List<Widget> children;
+  final List<Widget>? children;
 
   /// flag that determines if the dialog will be displayed with
   /// confirmation buttons or not .
@@ -347,7 +346,7 @@ class _ModalSettingsTile<T> extends StatefulWidget {
   /// **Note**: the action performed will not affect the settings that were updated
   /// automatically. However you can choose to modify them as per your need by referencing
   /// the values from the callback & updating
-  final VoidCallback onCancel;
+  final VoidCallback? onCancel;
 
   /// Callback to execute when user taps ok button, while [onCancel] callback
   /// is a simple void callback, this one allows you to perform some task
@@ -356,10 +355,10 @@ class _ModalSettingsTile<T> extends StatefulWidget {
   /// **Note**: the action performed will not affect the settings that were updated
   /// automatically. However you can choose to modify them as per your need by referencing
   /// the values from the callback & updating
-  final OnConfirmedCallback onConfirm;
+  final OnConfirmedCallback? onConfirm;
 
   _ModalSettingsTile({
-    @required this.title,
+    required this.title,
     this.subtitle = '',
     this.children,
     this.enabled = true,
@@ -390,7 +389,7 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
           style: subtitleTextStyle(context),
         ),
         enabled: widget.enabled,
-        onTap: () => _showWidget(context, widget.children),
+        onTap: () => _showWidget(context, widget.children!),
         dense: true,
       ),
     );
@@ -411,8 +410,7 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
         });
   }
 
-  List<Widget> _finalWidgets(
-      BuildContext dialogContext, List<Widget> children) {
+  List<Widget> _finalWidgets(BuildContext dialogContext, List<Widget> children) {
     if (widget.showConfirmation == null || !widget.showConfirmation) {
       return children;
     }
@@ -423,15 +421,14 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
     return widget.leading != null
         ? Row(
             children: <Widget>[
-              widget.leading,
+              widget.leading!,
               Text(widget.title, style: headerTextStyle(context)),
             ],
           )
         : Text(widget.title, style: headerTextStyle(context));
   }
 
-  List<Widget> _addActionWidgets(
-      BuildContext dialogContext, List<Widget> children) {
+  List<Widget> _addActionWidgets(BuildContext dialogContext, List<Widget> children) {
     final finalList = List<Widget>.from(children);
     finalList.add(ButtonBar(
       alignment: MainAxisAlignment.end,
@@ -444,8 +441,7 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
             widget.onCancel?.call();
             _disposeDialog(dialogContext);
           },
-          child:
-              Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
+          child: Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
         ),
         TextButton(
           style: TextButton.styleFrom(
@@ -454,7 +450,7 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
           onPressed: () async {
             var closeDialog = true;
             if (widget.onConfirm != null) {
-              closeDialog = widget.onConfirm();
+              closeDialog = widget.onConfirm!();
             }
 
             if (closeDialog) {
@@ -490,16 +486,16 @@ class _SettingsCheckbox extends StatelessWidget {
   final bool value;
 
   /// on change callback to handle state change
-  final OnChanged<bool> onChanged;
+  final OnChanged<bool?> onChanged;
 
   /// flag which represents the state of the settings, if false the the tile will
   /// ignore all the user inputs
   final bool enabled;
 
   _SettingsCheckbox({
-    @required this.value,
-    @required this.onChanged,
-    @required this.enabled,
+    required this.value,
+    required this.onChanged,
+    required this.enabled,
   });
 
   @override
@@ -525,9 +521,9 @@ class _SettingsSwitch extends StatelessWidget {
   final bool enabled;
 
   _SettingsSwitch({
-    @required this.value,
-    @required this.onChanged,
-    @required this.enabled,
+    required this.value,
+    required this.onChanged,
+    required this.enabled,
   });
 
   @override
@@ -549,17 +545,17 @@ class _SettingsRadio<T> extends StatelessWidget {
   final T value;
 
   /// on change callback to handle state change
-  final OnChanged<T> onChanged;
+  final OnChanged<T?> onChanged;
 
   /// flag which represents the state of the settings, if false the the tile will
   /// ignore all the user inputs
   final bool enabled;
 
   _SettingsRadio({
-    @required this.groupValue,
-    @required this.value,
-    @required this.onChanged,
-    @required this.enabled,
+    required this.groupValue,
+    required this.value,
+    required this.onChanged,
+    required this.enabled,
   });
 
   @override
@@ -581,19 +577,19 @@ class _SettingsDropDown<T> extends StatelessWidget {
   final List<T> values;
 
   /// on change call back to handle selected value change
-  final OnChanged<T> onChanged;
+  final OnChanged<T?> onChanged;
 
   /// single item builder for creating a [DropdownMenuItem]
-  final ItemBuilder<T> itemBuilder;
+  final ItemBuilder<T>? itemBuilder;
 
   /// flag which represents the state of the settings, if false the the tile will
   /// ignore all the user inputs
   final bool enabled;
 
   _SettingsDropDown({
-    @required this.selected,
-    @required this.values,
-    @required this.onChanged,
+    required this.selected,
+    required this.values,
+    required this.onChanged,
     this.itemBuilder,
     this.enabled = true,
   });
@@ -612,7 +608,7 @@ class _SettingsDropDown<T> extends StatelessWidget {
             (T val) {
               return DropdownMenuItem<T>(
                 value: val,
-                child: itemBuilder(val),
+                child: itemBuilder!(val),
               );
             },
           ).toList(),
@@ -637,13 +633,13 @@ class _SettingsSlider extends StatelessWidget {
   final double value;
 
   /// on change callback to handle the value change when slider starts moving
-  final OnChanged<double> onChangeStart;
+  final OnChanged<double>? onChangeStart;
 
   /// on change callback to handle the value change
-  final OnChanged<double> onChanged;
+  final OnChanged<double>? onChanged;
 
   /// on change callback to handle the value change when slider stops moving
-  final OnChanged<double> onChangeEnd;
+  final OnChanged<double>? onChangeEnd;
 
   /// flag which represents the state of the settings, if false then the tile will
   /// ignore all the user inputs
@@ -657,11 +653,11 @@ class _SettingsSlider extends StatelessWidget {
   final bool eagerUpdate;
 
   _SettingsSlider({
-    @required this.value,
-    @required this.min,
-    @required this.max,
-    @required this.step,
-    @required this.enabled,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.step,
+    required this.enabled,
     this.onChangeStart,
     this.onChanged,
     this.onChangeEnd,
@@ -675,13 +671,9 @@ class _SettingsSlider extends StatelessWidget {
       min: min,
       max: max,
       divisions: (max - min) ~/ (step),
-      onChangeStart: enabled && !eagerUpdate
-          ? (value) => onChangeStart(value.roundToDouble())
-          : null,
-      onChanged: enabled ? (value) => onChanged(value.roundToDouble()) : null,
-      onChangeEnd: enabled && !eagerUpdate
-          ? (value) => onChangeEnd(value.roundToDouble())
-          : null,
+      onChangeStart: enabled && !eagerUpdate ? (value) => onChangeStart!(value.roundToDouble()) : null,
+      onChanged: enabled ? (value) => onChanged!(value.roundToDouble()) : null,
+      onChangeEnd: enabled && !eagerUpdate ? (value) => onChangeEnd!(value.roundToDouble()) : null,
     );
   }
 }
@@ -692,7 +684,7 @@ class _SettingsColorPicker extends StatelessWidget {
   /// title of the settings tile and color pallet dialog
   final String title;
 
-  final String subtitle;
+  final String? subtitle;
 
   /// current value of the slider
   final String value;
@@ -705,10 +697,10 @@ class _SettingsColorPicker extends StatelessWidget {
   final bool enabled;
 
   _SettingsColorPicker({
-    @required this.value,
-    @required this.onChanged,
-    @required this.enabled,
-    @required this.title,
+    required this.value,
+    required this.onChanged,
+    required this.enabled,
+    required this.title,
     this.subtitle,
   });
 
@@ -716,7 +708,7 @@ class _SettingsColorPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return _SettingsTile(
       title: title,
-      subtitle: subtitle != null && subtitle.isNotEmpty ? subtitle : value,
+      subtitle: subtitle != null && subtitle!.isNotEmpty ? subtitle! : value,
       enabled: enabled,
       onTap: () => _showColorPicker(context, value),
       child: FloatingActionButton(
@@ -729,20 +721,21 @@ class _SettingsColorPicker extends StatelessWidget {
   }
 
   void _showColorPicker(BuildContext context, String value) {
-    Widget dialogContent = MaterialColorPicker(
-      shrinkWrap: true,
-      selectedColor: Utils.colorFromString(value),
-      onColorChange: (Color color) => onChanged(Utils.stringFromColor(color)),
-    );
+    throw Exception('Not support yet'); //Removed for easier migrate to null safety
+    // Widget dialogContent = MaterialColorPicker(
+    //   shrinkWrap: true,
+    //   selectedColor: Utils.colorFromString(value),
+    //   onColorChange: (Color color) => onChanged(Utils.stringFromColor(color)),
+    // );
 
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text('Pick a Color'),
-          content: dialogContent,
-        );
-      },
-    );
+    // showDialog(
+    //   context: context,
+    //   builder: (dialogContext) {
+    //     return AlertDialog(
+    //       title: Text('Pick a Color'),
+    //       content: dialogContent,
+    //     );
+    //   },
+    // );
   }
 }
